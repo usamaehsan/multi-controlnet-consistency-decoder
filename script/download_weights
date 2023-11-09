@@ -9,6 +9,9 @@ from diffusers import ControlNetModel, StableDiffusionPipeline
 from controlnet_aux import HEDdetector, OpenposeDetector, MLSDdetector, MidasDetector
 from transformers import AutoImageProcessor, UperNetForSemanticSegmentation
 import torch
+from consistencydecoder import ConsistencyDecoder
+
+ConsistencyDecoder(device="cuda:0", download_root="/src/consistencydecoder-cache")
 
 # append project directory to path so predict.py can be imported
 sys.path.append(".")

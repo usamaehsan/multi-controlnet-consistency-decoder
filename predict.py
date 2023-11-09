@@ -160,6 +160,9 @@ class Predictor(BasePredictor):
         
         self.compel_proc = Compel(tokenizer=self.pipe.tokenizer, text_encoder=self.pipe.text_encoder)
         
+        self.consistency_decoder = ConsistencyDecoder(
+            device="cuda:0", download_root="/src/consistencydecoder-cache"
+        )
 
         print("Setup complete in %f" % (time.time() - st))
 
@@ -199,6 +202,7 @@ class Predictor(BasePredictor):
         #image and mask for inpainting
         mask= None
         init_image= None
+        got_size= False
         for name, [image, conditioning_scale, mask_image] in inputs.items():
             if image is None:
                 continue

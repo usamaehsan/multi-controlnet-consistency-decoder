@@ -158,7 +158,7 @@ class Predictor(BasePredictor):
         
         self.lineart = LineartDetector.from_pretrained("lllyasviel/Annotators")
         
-        self.compel_proc = Compel(tokenizer=pipe.tokenizer, text_encoder=pipe.text_encoder)
+        self.compel_proc = Compel(tokenizer=self.pipe.tokenizer, text_encoder=self.pipe.text_encoder)
         
 
         print("Setup complete in %f" % (time.time() - st))
@@ -395,11 +395,11 @@ class Predictor(BasePredictor):
             generator = torch.Generator("cuda").manual_seed(this_seed)
 
             output = pipe(
-                prompt,
+                prompt_embeds=self.compel_proc(prompt),
                 num_inference_steps=num_inference_steps,
                 guidance_scale=guidance_scale,
                 eta=eta,
-                negative_prompt=negative_prompt,
+                negative_prompt_embeds=self.compel_proc(negative_prompt),
                 num_images_per_prompt=1,
                 generator=generator,
                 output_type="latent" if consistency_decoder else None,

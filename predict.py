@@ -36,6 +36,7 @@ from controlnet_aux.util import ade_palette
 # from midas_hack import MidasDetector
 from consistencydecoder import ConsistencyDecoder, save_image
 from compel import Compel
+from transformers import pipeline
 
 def resize_image(image, max_width, max_height):
     """
@@ -164,11 +165,18 @@ class Predictor(BasePredictor):
         self.consistency_decoder = ConsistencyDecoder(
             device="cuda:0", download_root="/src/consistencydecoder-cache"
         )
+        
+        self.depth_estimator = pipeline('depth-estimation')
 
         print("Setup complete in %f" % (time.time() - st))
 
     def depth_preprocess(self, img):
-        return self.midas(img)
+        image = self.depth_estimator(img)['depth']
+        image = np.array(image)
+        image = image[:, :, None]
+        image = np.concatenate([image, image, image], axis=2)
+        image = Image.fromarray(image)
+        return image
 
     def scribble_preprocess(self, img):
         return self.hed(img, scribble=True)
@@ -215,7 +223,7 @@ class Predictor(BasePredictor):
                 got_size= True
             else:
                 image= image.resize((w,h))
-            
+
             if name=="inpainting" and mask_image:
                 inpainting = True
                 mask_image= Image.open(mask_image)

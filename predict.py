@@ -209,7 +209,7 @@ class Predictor(BasePredictor):
             
             image = Image.open(image)
             if not got_size:
-                image= resize_image(img, max_width, max_height)
+                image= resize_image(image, max_width, max_height)
                 w, h= image.size
                 got_size= True
             else:
@@ -222,7 +222,7 @@ class Predictor(BasePredictor):
                 img= self.make_inpaint_condition(image, mask)
                 init_image= image
             else:
-                img = getattr(self, "{}_preprocess".format(name))(img)
+                img = getattr(self, "{}_preprocess".format(name))(image)
 
             control_nets.append(self.controlnets[name])
             processed_control_images.append(img)
@@ -418,7 +418,7 @@ class Predictor(BasePredictor):
                 print("Running consistency decoder...")
                 start = time.time()
                 sample = self.consistency_decoder(
-                    sample.unsqueeze(0) / self.pipe.vae.config.scaling_factor
+                    output.images[0].unsqueeze(0) / self.pipe.vae.config.scaling_factor
                 )
                 print("Consistency decoder took", time.time() - start, "seconds")
                 save_image(sample, output_path)

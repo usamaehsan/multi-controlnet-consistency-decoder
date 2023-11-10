@@ -29,10 +29,11 @@ from controlnet_aux import (
     OpenposeDetector,
     MLSDdetector,
     CannyDetector,
-    LineartDetector
+    LineartDetector,
+    MidasDetector
 )
 from controlnet_aux.util import ade_palette
-from midas_hack import MidasDetector
+# from midas_hack import MidasDetector
 from consistencydecoder import ConsistencyDecoder, save_image
 from compel import Compel
 
@@ -223,7 +224,7 @@ class Predictor(BasePredictor):
                 init_image= image
             else:
                 img = getattr(self, "{}_preprocess".format(name))(image)
-                
+
             img= img.resize((w,h))
             control_nets.append(self.controlnets[name])
             processed_control_images.append(img)

@@ -223,7 +223,8 @@ class Predictor(BasePredictor):
                 init_image= image
             else:
                 img = getattr(self, "{}_preprocess".format(name))(image)
-
+                
+            img= img.resize((w,h))
             control_nets.append(self.controlnets[name])
             processed_control_images.append(img)
             conditioning_scales.append(conditioning_scale)

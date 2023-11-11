@@ -42,12 +42,12 @@ p = StableDiffusionPipeline.from_pretrained(
 p.save_pretrained(SD15_WEIGHTS)
 
 for name, model in AUX_IDS.items():
-    aux = ControlNetModel.from_pretrained(
-        model,
-        cache_dir=TMP_CACHE,
-    )
-    aux = aux.half()
-    aux.save_pretrained(os.path.join(CONTROLNET_CACHE, name))
+     aux = ControlNetModel.from_pretrained(
+         model,
+         cache_dir=TMP_CACHE,
+     )
+     aux = aux.half()
+     aux.save_pretrained(os.path.join(CONTROLNET_CACHE, name))
 
 MidasDetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
 AutoImageProcessor.from_pretrained(
@@ -61,4 +61,4 @@ MLSDdetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
 OpenposeDetector.from_pretrained("lllyasviel/Annotators", cache_dir=PROCESSORS_CACHE)
 
 
-shutil.rmtree(TMP_CACHE)
+#shutil.rmtree(TMP_CACHE)

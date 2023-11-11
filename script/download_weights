@@ -11,7 +11,7 @@ from transformers import AutoImageProcessor, UperNetForSemanticSegmentation
 import torch
 from consistencydecoder import ConsistencyDecoder
 
-ConsistencyDecoder(device="cuda:0", download_root="/src/consistencydecoder-cache")
+# ConsistencyDecoder(device="cuda:0", download_root="/src/consistencydecoder-cache")
 
 # append project directory to path so predict.py can be imported
 sys.path.append(".")
@@ -41,26 +41,26 @@ p = StableDiffusionPipeline.from_pretrained(
         )
 p.save_pretrained(SD15_WEIGHTS)
 
-for name, model in AUX_IDS.items():
-    aux = ControlNetModel.from_pretrained(
-        model,
-        cache_dir=TMP_CACHE,
-    )
-    aux = aux.half()
-    aux.save_pretrained(os.path.join(CONTROLNET_CACHE, name))
+# for name, model in AUX_IDS.items():
+#     aux = ControlNetModel.from_pretrained(
+#         model,
+#         cache_dir=TMP_CACHE,
+#     )
+#     aux = aux.half()
+#     aux.save_pretrained(os.path.join(CONTROLNET_CACHE, name))
 
-MidasDetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
-AutoImageProcessor.from_pretrained(
-    "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
-)
-UperNetForSemanticSegmentation.from_pretrained(
-    "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
-)
-HEDdetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
-MLSDdetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
-OpenposeDetector.from_pretrained("lllyasviel/Annotators", cache_dir=PROCESSORS_CACHE)
+# MidasDetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
+# AutoImageProcessor.from_pretrained(
+#     "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
+# )
+# UperNetForSemanticSegmentation.from_pretrained(
+#     "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
+# )
+# HEDdetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
+# MLSDdetector.from_pretrained("lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE)
+# OpenposeDetector.from_pretrained("lllyasviel/Annotators", cache_dir=PROCESSORS_CACHE)
 
-pipe = StableDiffusionPipeline.from_pretrained("SG161222/Realistic_Vision_V5.0_noVAE", torch_dtype=torch.float16, cache_dir=TMP_CACHE)
-pipe.save_pretrained(SD15_WEIGHTS)
+# pipe = StableDiffusionPipeline.from_pretrained("SG161222/Realistic_Vision_V5.0_noVAE", torch_dtype=torch.float16, cache_dir=TMP_CACHE)
+# pipe.save_pretrained(SD15_WEIGHTS)
 
 shutil.rmtree(TMP_CACHE)

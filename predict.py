@@ -200,9 +200,9 @@ class Predictor(BasePredictor):
         image = torch.from_numpy(image)
 
         # Convert the torch tensor back to a Pillow image
-        image_pil = Image.fromarray((image.squeeze().numpy().transpose(1, 2, 0) * 255).astype(np.uint8))
+        # image_pil = Image.fromarray((image.squeeze().numpy().transpose(1, 2, 0) * 255).astype(np.uint8))
 
-        return image_pil
+        return image
 
     def build_pipe(
         self, inputs, max_width, max_height, guess_mode=False

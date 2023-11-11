@@ -76,7 +76,7 @@ AUX_IDS = {
     'lineart': "ControlNet-1-1-preview/control_v11p_sd15_lineart",
     'tile': "lllyasviel/control_v11f1e_sd15_tile",
     'brightness': "ioclab/control_v1p_sd15_brightness",
-    "inpaint": "lllyasviel/control_v11p_sd15_inpaint",
+    "inpainting": "lllyasviel/control_v11p_sd15_inpaint",
 }
 
 SCHEDULERS = {

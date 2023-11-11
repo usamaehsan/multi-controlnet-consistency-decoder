@@ -120,7 +120,7 @@ class Predictor(BasePredictor):
         st = time.time()
 
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            SD15_WEIGHTS, torch_dtype=torch.float16, local_files_only=True
+            SD15_WEIGHTS, torch_dtype=torch.float16,
         ).to("cuda")
 
         self.controlnets = {}
@@ -128,7 +128,7 @@ class Predictor(BasePredictor):
             self.controlnets[name] = ControlNetModel.from_pretrained(
                 os.path.join(CONTROLNET_CACHE, name),
                 torch_dtype=torch.float16,
-                local_files_only=True,
+                
             ).to("cuda")
 
         self.canny = CannyDetector()
@@ -198,7 +198,11 @@ class Predictor(BasePredictor):
         image[image_mask > 0.5] = -1.0  # set as masked pixel
         image = np.expand_dims(image, 0).transpose(0, 3, 1, 2)
         image = torch.from_numpy(image)
-        return image
+
+        # Convert the torch tensor back to a Pillow image
+        image_pil = Image.fromarray((image.squeeze().numpy().transpose(1, 2, 0) * 255).astype(np.uint8))
+
+        return image_pil
 
     def build_pipe(
         self, inputs, max_width, max_height, guess_mode=False

@@ -421,7 +421,7 @@ class Predictor(BasePredictor):
                 negative_prompt_embeds=self.compel_proc(negative_prompt),
                 num_images_per_prompt=1,
                 generator=generator,
-                output_type="latent" if consistency_decoder else None,
+                output_type="latent" if consistency_decoder else "pil",
                 **kwargs,
             )
 

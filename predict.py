@@ -71,8 +71,8 @@ def resize_image(image, max_width, max_height):
     return resized_image
 
 AUX_IDS = {
-    "depth": "fusing/stable-diffusion-v1-5-controlnet-depth",
-    "scribble": "fusing/stable-diffusion-v1-5-controlnet-scribble",
+    # "depth": "fusing/stable-diffusion-v1-5-controlnet-depth",
+    # "scribble": "fusing/stable-diffusion-v1-5-controlnet-scribble",
     'lineart': "ControlNet-1-1-preview/control_v11p_sd15_lineart",
     'tile': "lllyasviel/control_v11f1e_sd15_tile",
     'brightness': "ioclab/control_v1p_sd15_brightness",
@@ -296,20 +296,20 @@ class Predictor(BasePredictor):
             description="Conditioning scale for canny controlnet",
             default=1,
         ),
-        depth_image: Path = Input(
-            description="Control image for depth controlnet", default=None
-        ),
-        depth_conditioning_scale: float = Input(
-            description="Conditioning scale for depth controlnet",
-            default=1,
-        ),
-        scribble_image: Path = Input(
-            description="Control image for scribble controlnet", default=None
-        ),
-        scribble_conditioning_scale: float = Input(
-            description="Conditioning scale for scribble controlnet",
-            default=1,
-        ),
+        # depth_image: Path = Input(
+        #     description="Control image for depth controlnet", default=None
+        # ),
+        # depth_conditioning_scale: float = Input(
+        #     description="Conditioning scale for depth controlnet",
+        #     default=1,
+        # ),
+        # scribble_image: Path = Input(
+        #     description="Control image for scribble controlnet", default=None
+        # ),
+        # scribble_conditioning_scale: float = Input(
+        #     description="Conditioning scale for scribble controlnet",
+        #     default=1,
+        # ),
         tile_image: Path = Input(
             description="Control image for tile controlnet", default=None
         ),
@@ -387,10 +387,10 @@ class Predictor(BasePredictor):
         pipe, kwargs = self.build_pipe(
             {
                 "lineart": [lineart_image, lineart_conditioning_scale, None],
-                "depth": [depth_image, depth_conditioning_scale, None],
                 "tile": [tile_image, tile_conditioning_scale, None],
                 "inpainting": [inpainting_image, inpainting_conditioning_scale, mask_image],
-                "scribble": [scribble_image, scribble_conditioning_scale, None],
+                # "scribble": [scribble_image, scribble_conditioning_scale, None],
+                # "depth": [depth_image, depth_conditioning_scale, None],
                 "brightness": [brightness_image, brightness_conditioning_scale, None],
             },
             max_width=max_width,

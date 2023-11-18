@@ -237,6 +237,7 @@ class Predictor(BasePredictor):
         init_image= None
         got_size= False
         for name, [image, conditioning_scale, mask_image] in inputs.items():
+            print(name)
             if image is None:
                 continue
             
@@ -407,12 +408,12 @@ class Predictor(BasePredictor):
             raise Exception("missing weights")
         
         control_inputs= {
-                "lineart": [lineart_image, lineart_conditioning_scale, None],
+                "brightness": [brightness_image, brightness_conditioning_scale, None],
                 "tile": [tile_image, tile_conditioning_scale, None],
+                "lineart": [lineart_image, lineart_conditioning_scale, None],
                 "inpainting": [inpainting_image, inpainting_conditioning_scale, mask_image],
                 # "scribble": [scribble_image, scribble_conditioning_scale, None],
                 # "depth": [depth_image, depth_conditioning_scale, None],
-                "brightness": [brightness_image, brightness_conditioning_scale, None],
             }
         sorted_control_inputs= sort_dict_by_string(sorted_controlnets, control_inputs)
 

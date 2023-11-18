@@ -70,6 +70,25 @@ def resize_image(image, max_width, max_height):
 
     return resized_image
 
+def sort_dict_by_string(input_string, your_dict):
+    if not input_string or not isinstance(input_string, str):
+        # Return the original dictionary if the string is empty or not a string
+        return your_dict
+
+    order_list = [item.strip() for item in input_string.split(',')]
+
+    # Include keys from the dictionary that are not in the input string
+    remaining_keys = [key for key in your_dict if key not in order_list]
+
+    # Include keys from the input string that are present in the dictionary
+    valid_keys = [key for key in order_list if key in your_dict]
+
+    sorted_dict = {key: your_dict[key] for key in valid_keys}
+    sorted_dict.update({key: your_dict[key] for key in remaining_keys})
+
+    return sorted_dict
+
+
 AUX_IDS = {
     # "depth": "fusing/stable-diffusion-v1-5-controlnet-depth",
     # "scribble": "fusing/stable-diffusion-v1-5-controlnet-scribble",
@@ -380,19 +399,25 @@ class Predictor(BasePredictor):
         disable_safety_check: bool = Input(
             description="Disable safety check. Use at your own risk!", default=False
         ),
+        sorted_controlnets: str = Input(
+            description="Comma seperated string of controlnet names, list of names: tile, inpainting, lineart,depth ,scribble , brightness /// example value: tile, inpainting, lineart ", default="tile, inpainting, lineart"
+        ),
     ) -> List[Path]:
         if len(MISSING_WEIGHTS) > 0:
             raise Exception("missing weights")
-
-        pipe, kwargs = self.build_pipe(
-            {
+        
+        control_inputs= {
                 "lineart": [lineart_image, lineart_conditioning_scale, None],
                 "tile": [tile_image, tile_conditioning_scale, None],
                 "inpainting": [inpainting_image, inpainting_conditioning_scale, mask_image],
                 # "scribble": [scribble_image, scribble_conditioning_scale, None],
                 # "depth": [depth_image, depth_conditioning_scale, None],
                 "brightness": [brightness_image, brightness_conditioning_scale, None],
-            },
+            }
+        sorted_control_inputs= sort_dict_by_string(sorted_controlnets, control_inputs)
+
+        pipe, kwargs = self.build_pipe(
+            sorted_control_inputs,
             max_width=max_width,
             max_height=max_height,
             guess_mode=guess_mode,

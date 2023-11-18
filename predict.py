@@ -77,11 +77,11 @@ def sort_dict_by_string(input_string, your_dict):
 
     order_list = [item.strip() for item in input_string.split(',')]
 
-    # Include keys from the dictionary that are not in the input string
-    remaining_keys = [key for key in your_dict if key not in order_list]
-
     # Include keys from the input string that are present in the dictionary
     valid_keys = [key for key in order_list if key in your_dict]
+
+    # Include keys from the dictionary that are not in the input string
+    remaining_keys = [key for key in your_dict if key not in valid_keys]
 
     sorted_dict = {key: your_dict[key] for key in valid_keys}
     sorted_dict.update({key: your_dict[key] for key in remaining_keys})

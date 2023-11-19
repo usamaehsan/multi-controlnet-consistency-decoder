@@ -478,7 +478,7 @@ class Predictor(BasePredictor):
                 negative_prompt_embeds=self.compel_proc(negative_prompt),
                 num_images_per_prompt=1,
                 generator=generator,
-                # output_type="latent" if consistency_decoder else "pil",
+                output_type="pil",
                 **kwargs,
             )
 
@@ -488,7 +488,7 @@ class Predictor(BasePredictor):
             output_path = f"/tmp/seed-{this_seed}.png"
             output.images[0].save(output_path)
             output_paths.append(Path(output_path))
-
+            print("size: ", output.images[0].size)
             if low_res_fix:
                 print("Running low res fix...")
                 start = time.time()

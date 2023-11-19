@@ -472,10 +472,10 @@ class Predictor(BasePredictor):
 
             output = pipe(
                 prompt_embeds=self.compel_proc(prompt),
+                negative_prompt_embeds=self.compel_proc(negative_prompt),
                 num_inference_steps=num_inference_steps,
                 guidance_scale=guidance_scale,
                 eta=eta,
-                negative_prompt_embeds=self.compel_proc(negative_prompt),
                 num_images_per_prompt=1,
                 generator=generator,
                 output_type="pil",
@@ -496,8 +496,10 @@ class Predictor(BasePredictor):
                 condition_image = self.resize_for_condition_image(output.images[0], low_res_fix_resolution)
                 print("condition image resize took", time.time() - start, "seconds")
                 tile_output= self.tile_pipe(
-                    prompt="best quality", 
-                    negative_prompt="blur, lowres, bad anatomy, bad hands, cropped, worst quality",
+                    # prompt="best quality", 
+                    # negative_prompt="blur, lowres, bad anatomy, bad hands, cropped, worst quality",
+                    prompt_embeds=self.compel_proc(prompt),
+                    negative_prompt_embeds=self.compel_proc(negative_prompt),
                     image= condition_image,
                     num_inference_steps= low_res_fix_steps,
                     width=condition_image.size[0],

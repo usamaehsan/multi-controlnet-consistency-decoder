@@ -485,11 +485,10 @@ class Predictor(BasePredictor):
             if output.nsfw_content_detected and output.nsfw_content_detected[0]:
                 continue
 
-            output_path = f"/tmp/seed-{this_seed}.png"
             if low_res_fix:
                 print("Running low res fix...")
                 start = time.time()
-                seed= torch.manual_seed(0)
+                seed_= int.from_bytes(os.urandom(2), "big")
                 condition_image = self.resize_for_condition_image(output.images[0], low_res_fix_resolution)
                 print("condition image resize took", time.time() - start, "seconds")
                 tile_output= self.tile_pipe(
@@ -500,11 +499,14 @@ class Predictor(BasePredictor):
                     width=condition_image.size[0],
                     height=condition_image.size[1],
                     controlnet_conditioning_scale=1.0,
-                    generator=seed,
+                    generator=torch.manual_seed(seed_),
                 )
+                
+                path = f"/tmp/low-res-{seed_}.png"
                 print("low-res-fix took", time.time() - start, "seconds")
-                tile_output.images[0].save(output_path)
-            else:
+                tile_output.images[0].save(path)
+                output_paths.append(Path(path))
+            # else:
                 # if consistency_decoder:
                 #     print("Running consistency decoder...")
                 #     start = time.time()
@@ -514,8 +516,9 @@ class Predictor(BasePredictor):
                 #     print("Consistency decoder took", time.time() - start, "seconds")
                 #     save_image(sample, output_path)
                 # else:
-                output.images[0].save(output_path)
-
+                
+            output_path = f"/tmp/seed-{this_seed}.png"
+            output.images[0].save(output_path)
             output_paths.append(Path(output_path))
 
         if len(output_paths) == 0:

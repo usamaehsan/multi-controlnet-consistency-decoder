@@ -45,6 +45,7 @@ for name, model in AUX_IDS.items():
      aux = ControlNetModel.from_pretrained(
          model,
          cache_dir=TMP_CACHE,
+         torch_dtype=torch.float16
      )
      aux = aux.half()
      aux.save_pretrained(os.path.join(CONTROLNET_CACHE, name))

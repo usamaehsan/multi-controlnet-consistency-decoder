@@ -150,6 +150,17 @@ class Predictor(BasePredictor):
                 torch_dtype=torch.float16,
                 local_files_only=True,
             ).to("cuda")
+            
+        self.tile_pipe= StableDiffusionControlNetPipeline(
+                vae=self.pipe.vae,
+                text_encoder=self.pipe.text_encoder,
+                tokenizer=self.pipe.tokenizer,
+                unet=self.pipe.unet,
+                scheduler=self.pipe.scheduler,
+                safety_checker=self.pipe.safety_checker,
+                feature_extractor=self.pipe.feature_extractor,
+                controlnet=self.controlnets['tile'],
+            )
 
         self.canny = CannyDetector()
 
@@ -224,6 +235,17 @@ class Predictor(BasePredictor):
 
         return image
 
+    def resize_for_condition_image(self, input_image: Image, resolution: int):
+        input_image = input_image.convert("RGB")
+        W, H = input_image.size
+        k = float(resolution) / min(H, W)
+        H *= k
+        W *= k
+        H = int(round(H / 64.0)) * 64
+        W = int(round(W / 64.0)) * 64
+        img = input_image.resize((W, H), resample=Image.LANCZOS)
+        return img
+
     def build_pipe(
         self, inputs, max_width, max_height, guess_mode=False
     ):
@@ -237,10 +259,9 @@ class Predictor(BasePredictor):
         init_image= None
         got_size= False
         for name, [image, conditioning_scale, mask_image] in inputs.items():
-            print(name)
             if image is None:
                 continue
-            
+            print(name)
             image = Image.open(image)
             if not got_size:
                 image= resize_image(image, max_width, max_height)
@@ -403,6 +424,15 @@ class Predictor(BasePredictor):
         sorted_controlnets: str = Input(
             description="Comma seperated string of controlnet names, list of names: tile, inpainting, lineart,depth ,scribble , brightness /// example value: tile, inpainting, lineart ", default="tile, inpainting, lineart"
         ),
+        low_res_fix: bool = Input(
+            description="Using controlnet tile- after image generation", default=False
+        ),
+        low_res_fix_resolution: int = Input(
+            description="controlnet tile resolution- after image generation", default=768
+        ),
+        low_res_fix_steps: int = Input(
+            description="controlnet tile resolution- after image generation", default=10
+        ),
     ) -> List[Path]:
         if len(MISSING_WEIGHTS) > 0:
             raise Exception("missing weights")
@@ -454,18 +484,32 @@ class Predictor(BasePredictor):
 
             if output.nsfw_content_detected and output.nsfw_content_detected[0]:
                 continue
-            
+
             output_path = f"/tmp/seed-{this_seed}.png"
-            # if consistency_decoder:
-            #     print("Running consistency decoder...")
-            #     start = time.time()
-            #     sample = self.consistency_decoder(
-            #         output.images[0].unsqueeze(0) / self.pipe.vae.config.scaling_factor
-            #     )
-            #     print("Consistency decoder took", time.time() - start, "seconds")
-            #     save_image(sample, output_path)
-            # else:
-            output.images[0].save(output_path)
+            if low_res_fix:
+                seed= torch.manual_seed(0)
+                condition_image = self.resize_for_condition_image(output.images[0], low_res_fix_resolution)
+                tile_output= self.tile_pipe(
+                    prompt="best quality", 
+                    negative_prompt="blur, lowres, bad anatomy, bad hands, cropped, worst quality",
+                    num_inference_steps= low_res_fix_steps,
+                    width=condition_image.size[0],
+                    height=condition_image.size[1],
+                    controlnet_conditioning_scale=1.0,
+                    generator=seed,
+                )
+                tile_output.images[0].save(output_path)
+            else:
+                # if consistency_decoder:
+                #     print("Running consistency decoder...")
+                #     start = time.time()
+                #     sample = self.consistency_decoder(
+                #         output.images[0].unsqueeze(0) / self.pipe.vae.config.scaling_factor
+                #     )
+                #     print("Consistency decoder took", time.time() - start, "seconds")
+                #     save_image(sample, output_path)
+                # else:
+                output.images[0].save(output_path)
 
             output_paths.append(Path(output_path))
 

@@ -442,6 +442,9 @@ class Predictor(BasePredictor):
         low_res_fix_guess_mode: bool = Input(
             description="low res fix - guess mode", default=False
         ),
+        low_res_fix_conditioning_scale: float = Input(
+            description="", default=1.0
+        ),
     ) -> List[Path]:
         if len(MISSING_WEIGHTS) > 0:
             raise Exception("missing weights")
@@ -511,7 +514,7 @@ class Predictor(BasePredictor):
                     num_inference_steps= low_res_fix_steps,
                     width=condition_image.size[0],
                     height=condition_image.size[1],
-                    controlnet_conditioning_scale=1.0,
+                    controlnet_conditioning_scale=low_res_fix_conditioning_scale,
                     generator=generator,
                     guess_mode= low_res_fix_guess_mode,
                 )

@@ -511,7 +511,7 @@ class Predictor(BasePredictor):
                     num_inference_steps= low_res_fix_steps,
                     width=condition_image.size[0],
                     height=condition_image.size[1],
-                    controlnet_conditioning_scale=2.0,
+                    controlnet_conditioning_scale=1.0,
                     generator=generator,
                     guess_mode= low_res_fix_guess_mode,
                 )

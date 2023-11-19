@@ -433,6 +433,15 @@ class Predictor(BasePredictor):
         low_res_fix_steps: int = Input(
             description="controlnet tile resolution- after image generation", default=10
         ),
+        low_res_fix_prompt: str = Input(
+            description="", default="best quality"
+        ),
+        low_res_fix_negative_prompt: str = Input(
+            description="", default="blur, lowres, bad anatomy, bad hands, cropped, worst quality"
+        ),
+        low_res_fix_guess_mode: bool = Input(
+            description="low res fix - guess mode", default=False
+        ),
     ) -> List[Path]:
         if len(MISSING_WEIGHTS) > 0:
             raise Exception("missing weights")
@@ -496,19 +505,17 @@ class Predictor(BasePredictor):
                 condition_image = self.resize_for_condition_image(output.images[0], low_res_fix_resolution)
                 print("condition image resize took", time.time() - start, "seconds")
                 tile_output= self.tile_pipe(
-                    # prompt="", 
-                    # negative_prompt="",
-                    prompt_embeds=self.compel_proc(prompt),
-                    negative_prompt_embeds=self.compel_proc(negative_prompt),
+                    prompt_embeds=self.compel_proc(low_res_fix_prompt),
+                    negative_prompt_embeds=self.compel_proc(low_res_fix_negative_prompt),
                     image= condition_image,
                     num_inference_steps= low_res_fix_steps,
                     width=condition_image.size[0],
                     height=condition_image.size[1],
                     controlnet_conditioning_scale=2.0,
                     generator=generator,
-                    # guess_mode= True,
+                    guess_mode= low_res_fix_guess_mode,
                 )
-                
+
                 path = f"/tmp/low-res-{seed_}.png"
                 print("low-res-fix took", time.time() - start, "seconds")
                 tile_output.images[0].save(path)

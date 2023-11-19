@@ -484,6 +484,10 @@ class Predictor(BasePredictor):
 
             if output.nsfw_content_detected and output.nsfw_content_detected[0]:
                 continue
+            
+            output_path = f"/tmp/seed-{this_seed}.png"
+            output.images[0].save(output_path)
+            output_paths.append(Path(output_path))
 
             if low_res_fix:
                 print("Running low res fix...")
@@ -517,9 +521,6 @@ class Predictor(BasePredictor):
                 #     save_image(sample, output_path)
                 # else:
                 
-            output_path = f"/tmp/seed-{this_seed}.png"
-            output.images[0].save(output_path)
-            output_paths.append(Path(output_path))
 
         if len(output_paths) == 0:
             raise Exception(

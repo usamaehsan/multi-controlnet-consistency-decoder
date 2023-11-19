@@ -495,6 +495,7 @@ class Predictor(BasePredictor):
                 tile_output= self.tile_pipe(
                     prompt="best quality", 
                     negative_prompt="blur, lowres, bad anatomy, bad hands, cropped, worst quality",
+                    image= condition_image,
                     num_inference_steps= low_res_fix_steps,
                     width=condition_image.size[0],
                     height=condition_image.size[1],

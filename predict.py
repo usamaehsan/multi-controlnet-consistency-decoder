@@ -487,8 +487,11 @@ class Predictor(BasePredictor):
 
             output_path = f"/tmp/seed-{this_seed}.png"
             if low_res_fix:
+                print("Running low res fix...")
+                start = time.time()
                 seed= torch.manual_seed(0)
                 condition_image = self.resize_for_condition_image(output.images[0], low_res_fix_resolution)
+                print("condition image resize took", time.time() - start, "seconds")
                 tile_output= self.tile_pipe(
                     prompt="best quality", 
                     negative_prompt="blur, lowres, bad anatomy, bad hands, cropped, worst quality",
@@ -498,6 +501,7 @@ class Predictor(BasePredictor):
                     controlnet_conditioning_scale=1.0,
                     generator=seed,
                 )
+                print("low-res-fix took", time.time() - start, "seconds")
                 tile_output.images[0].save(output_path)
             else:
                 # if consistency_decoder:

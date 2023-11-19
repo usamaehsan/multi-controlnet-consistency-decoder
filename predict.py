@@ -140,7 +140,7 @@ class Predictor(BasePredictor):
 
         self.pipe = StableDiffusionPipeline.from_pretrained(
             SD15_WEIGHTS, torch_dtype=torch.float16,
-            # local_files_only=True,
+            local_files_only=True,
         ).to("cuda")
 
         self.controlnets = {}
@@ -148,7 +148,7 @@ class Predictor(BasePredictor):
             self.controlnets[name] = ControlNetModel.from_pretrained(
                 os.path.join(CONTROLNET_CACHE, name),
                 torch_dtype=torch.float16,
-                # local_files_only=True,
+                local_files_only=True,
             ).to("cuda")
 
         self.canny = CannyDetector()

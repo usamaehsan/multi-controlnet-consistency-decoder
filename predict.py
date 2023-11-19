@@ -496,17 +496,17 @@ class Predictor(BasePredictor):
                 condition_image = self.resize_for_condition_image(output.images[0], low_res_fix_resolution)
                 print("condition image resize took", time.time() - start, "seconds")
                 tile_output= self.tile_pipe(
-                    prompt="", 
-                    negative_prompt="",
-                    # prompt_embeds=self.compel_proc(prompt),
-                    # negative_prompt_embeds=self.compel_proc(negative_prompt),
+                    # prompt="", 
+                    # negative_prompt="",
+                    prompt_embeds=self.compel_proc(prompt),
+                    negative_prompt_embeds=self.compel_proc(negative_prompt),
                     image= condition_image,
                     num_inference_steps= low_res_fix_steps,
                     width=condition_image.size[0],
                     height=condition_image.size[1],
                     controlnet_conditioning_scale=1.0,
-                    generator=torch.manual_seed(seed_),
-                    guess_mode= True,
+                    generator=generator,
+                    # guess_mode= True,
                 )
                 
                 path = f"/tmp/low-res-{seed_}.png"

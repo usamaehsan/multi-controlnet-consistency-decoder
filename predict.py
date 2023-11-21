@@ -493,7 +493,7 @@ class Predictor(BasePredictor):
                 eta=eta,
                 num_images_per_prompt=1,
                 generator=generator,
-                output_type="pil",
+                # output_type="pil",
                 **kwargs,
             )
 

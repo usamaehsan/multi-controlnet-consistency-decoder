@@ -34,7 +34,7 @@ from controlnet_aux import (
 )
 from controlnet_aux.util import ade_palette
 # from midas_hack import MidasDetector
-from consistencydecoder import ConsistencyDecoder, save_image
+# from consistencydecoder import ConsistencyDecoder, save_image
 from compel import Compel
 from transformers import pipeline
 from diffusers.models import AutoencoderKL

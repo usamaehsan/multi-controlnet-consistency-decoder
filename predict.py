@@ -467,6 +467,7 @@ class Predictor(BasePredictor):
             max_height=max_height,
             guess_mode=guess_mode,
         )
+        pipe.to("cuda", torch.float16)
         # pipe.enable_xformers_memory_efficient_attention()
         pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
 

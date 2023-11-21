@@ -37,6 +37,7 @@ from controlnet_aux.util import ade_palette
 from consistencydecoder import ConsistencyDecoder, save_image
 from compel import Compel
 from transformers import pipeline
+from diffusers.models import AutoencoderKL
 
 def resize_image(image, max_width, max_height):
     """
@@ -138,9 +139,10 @@ class Predictor(BasePredictor):
         print("Loading pipeline...")
         st = time.time()
 
+        vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse")
         self.pipe = StableDiffusionPipeline.from_pretrained(
             SD15_WEIGHTS, torch_dtype=torch.float16,
-            local_files_only=True,
+            local_files_only=True, vae= vae
         ).to("cuda")
 
         self.controlnets = {}
@@ -150,7 +152,7 @@ class Predictor(BasePredictor):
                 torch_dtype=torch.float16,
                 local_files_only=True,
             ).to("cuda")
-            
+
         self.tile_pipe= StableDiffusionControlNetPipeline(
                 vae=self.pipe.vae,
                 text_encoder=self.pipe.text_encoder,
@@ -465,7 +467,8 @@ class Predictor(BasePredictor):
             max_height=max_height,
             guess_mode=guess_mode,
         )
-        pipe.enable_xformers_memory_efficient_attention()
+        # pipe.enable_xformers_memory_efficient_attention()
+        pipe.enable_model_cpu_offload()
         pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
 
         if seed is None:

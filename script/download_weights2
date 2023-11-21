@@ -36,10 +36,8 @@ if os.path.exists(TMP_CACHE):
     shutil.rmtree(TMP_CACHE)
 os.makedirs(TMP_CACHE)
 
-from diffusers.models import AutoencoderKL
-vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse")
 p = StableDiffusionPipeline.from_pretrained(
-            "SG161222/Realistic_Vision_V5.0_noVAE", torch_dtype=torch.float16, vae= vae, cache_dir=TMP_CACHE
+            "runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16, cache_dir=TMP_CACHE
         )
 p.save_pretrained(SD15_WEIGHTS)
 

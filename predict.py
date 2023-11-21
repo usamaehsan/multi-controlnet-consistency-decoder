@@ -468,7 +468,6 @@ class Predictor(BasePredictor):
             guess_mode=guess_mode,
         )
         # pipe.enable_xformers_memory_efficient_attention()
-        pipe.enable_model_cpu_offload()
         pipe.scheduler = SCHEDULERS[scheduler].from_config(pipe.scheduler.config)
 
         if seed is None:

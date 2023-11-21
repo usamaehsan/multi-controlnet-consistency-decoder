@@ -144,7 +144,8 @@ class Predictor(BasePredictor):
             SD15_WEIGHTS, torch_dtype=torch.float16,
             local_files_only=True, vae= vae
         ).to("cuda")
-
+        self.pipe.enable_model_cpu_offload()
+        
         self.controlnets = {}
         for name in AUX_IDS.keys():
             self.controlnets[name] = ControlNetModel.from_pretrained(
@@ -475,7 +476,7 @@ class Predictor(BasePredictor):
             seed = int.from_bytes(os.urandom(2), "big")
         print(f"Using seed: {seed}")
 
-        generator = torch.Generator("cuda").manual_seed(seed)
+        # generator = torch.Generator("cuda").manual_seed(seed)
 
         if disable_safety_check:
             pipe.safety_checker = None
@@ -483,7 +484,7 @@ class Predictor(BasePredictor):
         output_paths= []
         for idx in range(num_outputs):
             this_seed = seed + idx
-            generator = torch.Generator("cuda").manual_seed(this_seed)
+            generator = torch.Generator("cuda").manual_seed(seed)
 
             output = pipe(
                 prompt_embeds=self.compel_proc(prompt),

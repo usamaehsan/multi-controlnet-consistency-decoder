@@ -223,7 +223,7 @@ class Predictor(BasePredictor):
     #     return self.hed(img, scribble=True)
     
     def lineart_preprocess(self, img):
-        return self.lineart(img, coarse= True)
+        return self.lineart(img, coarse= False)
 
     def tile_preprocess(self, img):
         return img

@@ -207,7 +207,7 @@ class Predictor(BasePredictor):
         #     device="cuda:0", download_root="/src/consistencydecoder-cache"
         # )
         
-        self.depth_estimator = pipeline('depth-estimation')
+        # self.depth_estimator = pipeline('depth-estimation')
 
         print("Setup complete in %f" % (time.time() - st))
 
@@ -223,7 +223,7 @@ class Predictor(BasePredictor):
     #     return self.hed(img, scribble=True)
     
     def lineart_preprocess(self, img):
-        return self.lineart(img)
+        return self.lineart(img, coarse= True)
 
     def tile_preprocess(self, img):
         return img
@@ -288,7 +288,7 @@ class Predictor(BasePredictor):
                 init_image= image
             else:
                 img = getattr(self, "{}_preprocess".format(name))(image)
-            
+
             if not inpainting:
                 img= img.resize((w,h))
             control_nets.append(self.controlnets[name])

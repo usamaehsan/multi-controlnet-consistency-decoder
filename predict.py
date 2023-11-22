@@ -141,7 +141,7 @@ class Predictor(BasePredictor):
 
         vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse")
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            "runwayml/stable-diffusion-v1-5", torch_dtype=torch.float16,
+            "SG161222/Realistic_Vision_V5.0_noVAE", torch_dtype=torch.float16,
             # local_files_only=True,
             vae= vae
         )
@@ -223,7 +223,7 @@ class Predictor(BasePredictor):
     #     return self.hed(img, scribble=True)
     
     def lineart_preprocess(self, img):
-        return self.lineart(img, coarse= True)
+        return self.lineart(img, coarse= False)
 
     def tile_preprocess(self, img):
         return img

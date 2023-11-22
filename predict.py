@@ -116,17 +116,17 @@ CONTROLNET_CACHE = "controlnet-cache"
 PROCESSORS_CACHE = "processors-cache"
 MISSING_WEIGHTS = []
 
-if not os.path.exists(CONTROLNET_CACHE) or not os.path.exists(PROCESSORS_CACHE):
-    print(
-        "controlnet weights missing, use `cog run python script/download_weights` to download"
-    )
-    MISSING_WEIGHTS.append("controlnet")
+# if not os.path.exists(CONTROLNET_CACHE) or not os.path.exists(PROCESSORS_CACHE):
+#     print(
+#         "controlnet weights missing, use `cog run python script/download_weights` to download"
+#     )
+#     MISSING_WEIGHTS.append("controlnet")
 
-if not os.path.exists(SD15_WEIGHTS):
-    print(
-        "sd15 weights missing, use `cog run python` and then load and save_pretrained('weights')"
-    )
-    MISSING_WEIGHTS.append("sd15")
+# if not os.path.exists(SD15_WEIGHTS):
+#     print(
+#         "sd15 weights missing, use `cog run python` and then load and save_pretrained('weights')"
+#     )
+#     MISSING_WEIGHTS.append("sd15")
 
 
 class Predictor(BasePredictor):
@@ -457,8 +457,8 @@ class Predictor(BasePredictor):
             description="", default=1.0
         ),
     ) -> List[Path]:
-        if len(MISSING_WEIGHTS) > 0:
-            raise Exception("missing weights")
+        # if len(MISSING_WEIGHTS) > 0:
+        #     raise Exception("missing weights")
         
         control_inputs= {
                 "brightness": [brightness_image, brightness_conditioning_scale, None],

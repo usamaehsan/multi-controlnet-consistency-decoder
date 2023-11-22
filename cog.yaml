@@ -6,7 +6,7 @@ build:
   python_version: "3.10.12"
   python_packages:
     - "diffusers"
-    - "torch==2.1.0+cu118"
+    - "torch==2.1.0"
     - "opencv-contrib-python-headless==4.6.0.66"
     - "controlnet-aux==0.0.3"
     - "transformers"

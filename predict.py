@@ -141,18 +141,25 @@ class Predictor(BasePredictor):
 
         vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse")
         self.pipe = StableDiffusionPipeline.from_pretrained(
-            SD15_WEIGHTS, torch_dtype=torch.float16,
-            local_files_only=True, vae= vae
-        ).to("cuda")
+            "SG161222/Realistic_Vision_V5.0_noVAE", torch_dtype=torch.float16,
+            # local_files_only=True,
+            vae= vae
+        )
         self.pipe.enable_model_cpu_offload()
         
         self.controlnets = {}
-        for name in AUX_IDS.keys():
+        # for name in AUX_IDS.keys():
+        #     self.controlnets[name] = ControlNetModel.from_pretrained(
+        #         os.path.join(CONTROLNET_CACHE, name),
+        #         torch_dtype=torch.float16,
+        #         # local_files_only=True,
+        #     ).to("cuda")
+        for name, model in AUX_IDS.items():
             self.controlnets[name] = ControlNetModel.from_pretrained(
-                os.path.join(CONTROLNET_CACHE, name),
+                model,
                 torch_dtype=torch.float16,
-                local_files_only=True,
-            ).to("cuda")
+                # local_files_only=True,
+            )
 
         self.tile_pipe= StableDiffusionControlNetPipeline(
                 vae=self.pipe.vae,
@@ -165,32 +172,32 @@ class Predictor(BasePredictor):
                 controlnet=self.controlnets['tile'],
             )
 
-        self.canny = CannyDetector()
+        # self.canny = CannyDetector()
 
         # Depth + Normal
-        self.midas = MidasDetector.from_pretrained(
-            "lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
-        )
+        # self.midas = MidasDetector.from_pretrained(
+        #     "lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
+        # )
 
-        self.hed = HEDdetector.from_pretrained(
-            "lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
-        )
+        # self.hed = HEDdetector.from_pretrained(
+        #     "lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
+        # )
 
         # Hough
-        self.mlsd = MLSDdetector.from_pretrained(
-            "lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
-        )
+        # self.mlsd = MLSDdetector.from_pretrained(
+        #     "lllyasviel/ControlNet", cache_dir=PROCESSORS_CACHE
+        # )
 
-        self.seg_processor = AutoImageProcessor.from_pretrained(
-            "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
-        )
-        self.seg_segmentor = UperNetForSemanticSegmentation.from_pretrained(
-            "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
-        )
+        # self.seg_processor = AutoImageProcessor.from_pretrained(
+        #     "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
+        # )
+        # self.seg_segmentor = UperNetForSemanticSegmentation.from_pretrained(
+        #     "openmmlab/upernet-convnext-small", cache_dir=PROCESSORS_CACHE
+        # )
 
-        self.pose = OpenposeDetector.from_pretrained(
-            "lllyasviel/Annotators", cache_dir=PROCESSORS_CACHE
-        )
+        # self.pose = OpenposeDetector.from_pretrained(
+        #     "lllyasviel/Annotators", cache_dir=PROCESSORS_CACHE
+        # )
         
         self.lineart = LineartDetector.from_pretrained("lllyasviel/Annotators")
         
@@ -212,8 +219,8 @@ class Predictor(BasePredictor):
         image = Image.fromarray(image)
         return image
 
-    def scribble_preprocess(self, img):
-        return self.hed(img, scribble=True)
+    # def scribble_preprocess(self, img):
+    #     return self.hed(img, scribble=True)
     
     def lineart_preprocess(self, img):
         return self.lineart(img)
@@ -326,6 +333,7 @@ class Predictor(BasePredictor):
                     "controlnet_conditioning_scale": conditioning_scales,
                     "guess_mode": guess_mode,
                 }
+                print(kwargs, control_nets)
 
         return pipe, kwargs
 

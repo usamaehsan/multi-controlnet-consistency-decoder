@@ -2,15 +2,15 @@ build:
   gpu: true
   system_packages:
     - "python3-opencv"
-  cuda: "11.8"
-  python_version: "3.10.12"
+  cuda: "11.6"
+  python_version: "3.9"
   python_packages:
     - "diffusers"
     - "torch==2.1.0"
     - "opencv-contrib-python-headless==4.6.0.66"
     - "controlnet-aux==0.0.3"
     - "transformers"
-    # - "xformers"
+    - "xformers"
     - "accelerate"
     - "triton"
     - "compel"
